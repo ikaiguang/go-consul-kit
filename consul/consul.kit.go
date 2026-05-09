@@ -2,28 +2,7 @@ package consulpkg
 
 import (
 	"github.com/hashicorp/consul/api"
-	"google.golang.org/protobuf/types/known/durationpb"
 )
-
-// Config consul config
-type Config struct {
-	Scheme             string
-	Address            string
-	PathPrefix         string
-	Datacenter         string
-	WaitTime           *durationpb.Duration
-	Token              string
-	Namespace          string
-	Partition          string
-	WithHttpBasicAuth  bool
-	AuthUsername       string
-	AuthPassword       string
-	InsecureSkipVerify bool
-	TlsAddress         string
-	TlsCaPem           string
-	TlsCertPem         string
-	TlsKeyPem          string
-}
 
 // NewConsulClient .
 func NewConsulClient(conf *Config, opts ...Option) (*api.Client, error) {

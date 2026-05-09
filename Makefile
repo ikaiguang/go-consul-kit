@@ -18,6 +18,8 @@ PROJECT_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 PROJECT_ABS_PATH := $(patsubst %/,%,$(dir $(PROJECT_MAKEFILE)))
 PROJECT_PATH_NAME := $(notdir $(PROJECT_ABS_PATH))
 PROJECT_REL_PATH := "./"
+CLANG_FORMAT ?= clang-format
+PROTO_FORMAT_STYLE := {Language: Proto, BasedOnStyle: Google, IndentWidth: 2, ColumnLimit: 0, BreakBeforeBraces: Attach, AllowShortFunctionsOnASingleLine: None, AlignConsecutiveAssignments: true}
 
 # 示例
 ifeq ($(GOHOSTOS), windows)
@@ -45,14 +47,20 @@ AWK_HELP_CMD = awk '/^[a-zA-Z\-_0-9]+:/ { \
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
+PROTO_FORMAT_SHELL_CMD = find . -name '*.proto' -print0 | xargs -0 "$(CLANG_FORMAT)" -style='$(PROTO_FORMAT_STYLE)' -i
+PROTO_FORMAT_POWERSHELL_CMD = powershell -NoProfile -ExecutionPolicy Bypass -Command "Get-ChildItem -Path . -Recurse -Filter *.proto -File | ForEach-Object { & '$(CLANG_FORMAT)' -style='$(PROTO_FORMAT_STYLE)' -i $$_.FullName }"
+
 ifeq ($(GOHOSTOS), windows)
 ifeq ($(GIT_BASH),)
 HELP_CMD = powershell -NoProfile -ExecutionPolicy Bypass -Command "$$last = ''; Get-Content '$(MAKEFILE_LIST)' | ForEach-Object { if ($$_ -match '^[a-zA-Z\-_0-9]+:') { if ($$last -match '^\# (.*)') { $$target = ($$_ -split ':', 2)[0]; Write-Host ('{0,-22} {1}' -f $$target, $$Matches[1]) } }; $$last = $$_ }"
+PROTO_FORMAT_CMD = $(PROTO_FORMAT_POWERSHELL_CMD)
 else
 HELP_CMD = $(AWK_HELP_CMD)
+PROTO_FORMAT_CMD = $(PROTO_FORMAT_SHELL_CMD)
 endif
 else
 HELP_CMD = $(AWK_HELP_CMD)
+PROTO_FORMAT_CMD = $(PROTO_FORMAT_SHELL_CMD)
 endif
 
 
@@ -111,7 +119,7 @@ init:
 # ===== include =====
 
 # api
-#include api/makefile_protoc.mk
+include consul/makefile_protoc.mk
 
 # run
 #include testdata/ping-service/cmd/makefile_run.mk
@@ -141,3 +149,8 @@ generate:
 	#go mod tidy
 	#go generate ./...
 	#wire ./testdata/ping-service/cmd/ping-service/export
+
+.PHONY: format-protobuf
+# format-protobuf : format protobuf files with clang-format
+format-protobuf:
+	$(PROTO_FORMAT_CMD)
