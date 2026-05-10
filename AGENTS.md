@@ -4,7 +4,7 @@
 
 ## 项目事实
 
-- Go 版本：`1.25.9`
+- Go 版本：`1.26`
 - 默认使用中文交流、解释和补充文档；代码标识符保持英文。
 
 ## 架构硬约束
@@ -18,12 +18,7 @@
 
 - 不要手改生成文件，如 `*.pb.go`、`*_grpc.pb.go`、`*_http.pb.go`、`*.validate.go`、`wire_gen.go`。
 - Proto 生成命令以 `Makefile` 为准。
-- 修改 Wire 装配后，运行：
-
-```bash
-make generate
-wire ./testdata/ping-service/cmd/ping-service/export
-```
+- 修改 Wire 装配后，按 `Makefile` 中对应目标重新生成。
 
 ## 常用命令
 
@@ -58,6 +53,7 @@ Windows 下如果 `make` 在 PowerShell 中表现异常，优先使用等价的 
 
 ## 工作方式
 
+- 除非用户明确指定或任务必须处理 `./mytest`，默认忽略 `./mytest` 下的所有文档和文件；搜索、阅读、修改、审计、测试范围判断和规则沉淀都不要主动纳入该目录。
 - 对用户已明确要求的低风险本地改动，先读相关文件后可直接执行，并在 `.agents/specs/<task-name>/spec.md` 或最终回复中记录目标、改动、验证和风险；不需要额外等待确认。
 - 低风险本地改动包括：读取和搜索文件；修改用户指定的文档、prompt、README、注释、示例文本；小范围修 typo、格式、链接、命令说明；修改当前仓库内相关普通源码或测试且不改变公共接口；为小修补充对应单元测试；运行 `gofmt`、`go test`、`go vet`、`go list`、`make -n ...`、`git diff`、`git status` 等本地验证命令；新增或调整低风险辅助 Makefile 目标但不自动执行批量破坏性动作。
 - 中风险任务先在 `.agents/specs/<task-name>/spec.md` 写清目标、方案、任务、验收和风险；若用户目标已经明确，可写完后继续执行，不必停下等确认。中风险包括多文件文档补全、多包低风险测试补充、小型重构、新增本地工具脚本或调整 skill 流程规则。
