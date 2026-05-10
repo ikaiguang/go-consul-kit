@@ -105,6 +105,12 @@ git diff --check
 
 修改 protobuf 后不要手改生成文件，应通过 Makefile 目标重新生成。
 
+## Give a star! ⭐
+
+如果您觉得这个项目有趣，或者对您有帮助，请给个 star 吧！
+
+If you think this project is interesting, or helpful to you, please give a star!
+
 ## License
 
 本仓库已提供 [LICENSE](LICENSE)。发布前请确认许可证内容符合项目预期。
